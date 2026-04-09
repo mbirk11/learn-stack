@@ -1,0 +1,132 @@
+.hero-banner {
+  width: 100%;
+}
+
+.hero-banner__background {
+  position: relative;
+  min-height: 320px;
+  border-radius: 24px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(20, 20, 20, 0.45) 0%,
+    rgba(20, 20, 20, 0.2) 45%,
+    rgba(20, 20, 20, 0.15) 100%
+  );
+}
+
+.hero-banner__content {
+  position: relative;
+  z-index: 1;
+  min-height: 320px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hero-banner__text {
+  max-width: 1218px;
+}
+
+.hero-banner__title {
+  margin: 0 0 12px;
+  font-family: "Inter", sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 100%;
+  font-style: bold;
+  color: #ffffff;
+}
+
+.hero-banner__description {
+  margin: 0 0 24px;
+  font-family: "Inter", sans-serif;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1.5;
+  font-style: light;
+  color: rgba(255, 255, 255, 0.92);
+  min-height: 99px;
+}
+
+.hero-banner__controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.hero-banner__dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-banner__dot {
+  width: 57px;
+  height: 6px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+}
+
+.hero-banner__dot.active {
+  background: #c1bcbc80;
+}
+
+.hero-banner__arrows {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-banner__arrow {
+  width: 43px;
+  height: 43px;
+  border: 2px solid rgba(193, 188, 188, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(193, 188, 188, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.hero-banner__arrow--active,
+.hero-banner__arrow:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.hero-banner__arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 768px) {
+  .hero-banner__background,
+  .hero-banner__content {
+    min-height: 260px;
+    min-height: 200px;
+  }
+
+  .hero-banner__content {
+    padding: 24px 20px;
+  }
+}
