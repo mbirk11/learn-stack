@@ -7,10 +7,15 @@ import BookIcon from "../../../assets/icons/book.svg?react";
 import UserProfileIcon from "../../../assets/icons/defaulte_profile.svg?react";
 import Modal from "../../ui/modal";
 import Sidebar from "../../ui/sideBar";
+import Button from "../../ui/button";
+import { LoginForm, SignupForm, UserProfile } from "../../ui/forms";
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [authed, setauthed] = useState(true);
+  const [modalType, setModalType] = useState<
+    "login" | "signup" | "profile" | null
+  >(null);
 
   return (
     <header>
@@ -24,25 +29,49 @@ export default function Header() {
             <SparkleIcon className="icon" />
             <span className="link">Browse Courses</span>
           </Link>
-
-          <span className="nav-item" onClick={() => setSidebarOpen(true)}>
-            <BookIcon className="icon" />
-            <span className="link">Enrolled Courses</span>
-          </span>
-
-          <UserProfileIcon
-            className="profile-icon"
-            onClick={() => setOpen(true)}
-          />
+          {!authed ? (
+            <>
+              <Button
+                btnType="default-outline"
+                onClick={() => setModalType("login")}
+              >
+                Log In
+              </Button>
+              <Button onClick={() => setModalType("signup")}>Sign Up</Button>
+            </>
+          ) : (
+            <>
+              <span className="nav-item" onClick={() => setSidebarOpen(true)}>
+                <BookIcon className="icon" />
+                <span className="link">Enrolled Courses</span>
+              </span>
+              <UserProfileIcon
+                className="profile-icon"
+                onClick={() => setModalType("profile")}
+              />
+            </>
+          )}
         </nav>
       </div>
 
       <Modal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        title="Create Account"
+        isOpen={modalType !== null}
+        onClose={() => setModalType(null)}
+        title={
+          modalType === "login"
+            ? "Log In"
+            : modalType === "signup"
+              ? "Create Account"
+              : modalType === "profile"
+                ? "User Profile"
+                : ""
+        }
+        showBackButton={modalType === "signup"} // optional
+        onBack={() => setModalType("login")}
       >
-        <p>Content here</p>
+        {modalType === "login" && <LoginForm />}
+        {modalType === "signup" && <SignupForm />}
+        {modalType === "profile" && <UserProfile />}
       </Modal>
       <Sidebar
         isOpen={sidebarOpen}
