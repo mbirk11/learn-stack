@@ -5,17 +5,19 @@ import "./index.css";
 import SparkleIcon from "../../../assets/icons/sparkle.svg?react";
 import BookIcon from "../../../assets/icons/book.svg?react";
 import UserProfileIcon from "../../../assets/icons/defaulte_profile.svg?react";
-import Modal from "../../ui/modal";
+import Modal from "../../ui/modal/defaultModal";
+import SignupModal from "../../ui/modal/signupModal";
 import Sidebar from "../../ui/sideBar";
 import Button from "../../ui/button";
-import { LoginForm, SignupForm, UserProfile } from "../../ui/forms";
+import LoginForm from "../../ui/forms/login";
+import UserProfile from "../../ui/forms/profile";
+
+type ModalView = "login" | "profile" | "signup" | null;
 
 export default function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [authed, setauthed] = useState(true);
-  const [modalType, setModalType] = useState<
-    "login" | "signup" | "profile" | null
-  >(null);
+  const [authed, setAuthed] = useState(true);
+  const [modalType, setModalType] = useState<ModalView>(null);
 
   return (
     <header>
@@ -29,6 +31,7 @@ export default function Header() {
             <SparkleIcon className="icon" />
             <span className="link">Browse Courses</span>
           </Link>
+
           {!authed ? (
             <>
               <Button
@@ -37,6 +40,7 @@ export default function Header() {
               >
                 Log In
               </Button>
+
               <Button onClick={() => setModalType("signup")}>Sign Up</Button>
             </>
           ) : (
@@ -45,6 +49,7 @@ export default function Header() {
                 <BookIcon className="icon" />
                 <span className="link">Enrolled Courses</span>
               </span>
+
               <UserProfileIcon
                 className="profile-icon"
                 onClick={() => setModalType("profile")}
@@ -55,24 +60,22 @@ export default function Header() {
       </div>
 
       <Modal
-        isOpen={modalType !== null}
+        isOpen={modalType === "login" || modalType === "profile"}
         onClose={() => setModalType(null)}
-        title={
-          modalType === "login"
-            ? "Log In"
-            : modalType === "signup"
-              ? "Create Account"
-              : modalType === "profile"
-                ? "User Profile"
-                : ""
-        }
-        showBackButton={modalType === "signup"} // optional
-        onBack={() => setModalType("login")}
+        title={modalType === "login" ? "Log In" : "User Profile"}
       >
-        {modalType === "login" && <LoginForm />}
-        {modalType === "signup" && <SignupForm />}
+        {modalType === "login" && (
+          <LoginForm onGoToSignup={() => setModalType("signup")} />
+        )}
         {modalType === "profile" && <UserProfile />}
       </Modal>
+
+      <SignupModal
+        isOpen={modalType === "signup"}
+        onClose={() => setModalType(null)}
+        onGoToLogin={() => setModalType("login")}
+      />
+
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
