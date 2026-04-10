@@ -135,18 +135,21 @@ export default function HeaderBanner() {
             <div className="hero-banner__arrows">
               <button
                 type="button"
-                className="hero-banner__arrow"
+                className={`hero-banner__arrow ${
+                  currentIndex !== 0 ? "hero-banner__arrow--active" : ""
+                }`}
                 onClick={handlePrev}
-                aria-label="Previous slide"
               >
                 <IoChevronBackOutline />
               </button>
-
               <button
                 type="button"
-                className="hero-banner__arrow"
+                className={`hero-banner__arrow ${
+                  currentIndex !== slides.length - 1
+                    ? "hero-banner__arrow--active"
+                    : ""
+                }`}
                 onClick={handleNext}
-                aria-label="Next slide"
               >
                 <IoChevronForwardOutline />
               </button>

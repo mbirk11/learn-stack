@@ -41,8 +41,7 @@
   font-family: "Inter", sans-serif;
   font-size: 48px;
   font-weight: 700;
-  line-height: 100%;
-  font-style: bold;
+  line-height: 1;
   color: #ffffff;
 }
 
@@ -52,7 +51,6 @@
   font-size: 24px;
   font-weight: 300;
   line-height: 1.5;
-  font-style: light;
   color: rgba(255, 255, 255, 0.92);
   min-height: 99px;
 }
@@ -83,7 +81,7 @@
 }
 
 .hero-banner__dot.active {
-  background: #c1bcbc80;
+  background: #f5f5f5;
 }
 
 .hero-banner__arrows {
@@ -110,8 +108,8 @@
 
 .hero-banner__arrow--active,
 .hero-banner__arrow:hover {
-  border-color: #ffffff;
-  color: #ffffff;
+  border-color: #f5f5f5;
+  color: #f5f5f5;
 }
 
 .hero-banner__arrow svg {
