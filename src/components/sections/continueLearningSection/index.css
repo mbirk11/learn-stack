@@ -1,0 +1,19 @@
+.continue-learning-section {
+  margin-top: 48px;
+}
+
+.continue-learning-wrapper {
+  position: relative;
+}
+
+.continue-learning-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.blurred {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}

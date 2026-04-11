@@ -1,0 +1,10 @@
+.start-learning-section {
+  width: 100%;
+  margin-top: 56px;
+}
+
+.start-learning-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
