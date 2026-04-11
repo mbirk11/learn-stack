@@ -11,14 +11,14 @@ import Sidebar from "../../ui/sideBar";
 import Button from "../../ui/button";
 import LoginForm from "../../ui/forms/login";
 import UserProfile from "../../ui/forms/profile";
+import { useAuth } from "../../../context/AuthContext";
 
 type ModalView = "login" | "profile" | "signup" | null;
 
 export default function Header() {
+  const { isAuthenticated } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [authed, setAuthed] = useState(true);
   const [modalType, setModalType] = useState<ModalView>(null);
-
   return (
     <header>
       <div className="container">
@@ -32,7 +32,7 @@ export default function Header() {
             <span className="link">Browse Courses</span>
           </Link>
 
-          {!authed ? (
+          {!isAuthenticated ? (
             <>
               <Button
                 btnType="default-outline"
@@ -65,7 +65,10 @@ export default function Header() {
         title={modalType === "login" ? "Log In" : "User Profile"}
       >
         {modalType === "login" && (
-          <LoginForm onGoToSignup={() => setModalType("signup")} />
+          <LoginForm
+            onSuccess={() => setModalType(null)}
+            onGoToSignup={() => setModalType("signup")}
+          />
         )}
         {modalType === "profile" && <UserProfile />}
       </Modal>

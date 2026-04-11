@@ -35,7 +35,6 @@
   width: 18px;
   height: 18px;
   border-radius: 9999px;
-  background: #52c41a;
   border: 3px solid #ffffff;
   box-sizing: border-box;
 }
@@ -65,6 +64,21 @@
   font-weight: 400;
 }
 
+.profile-status-text.complete {
+  color: #22c55e;
+}
+
+.profile-status-text.incomplete {
+  color: #f4a316;
+}
+.profile-status-dot.complete {
+  background-color: #1dc31d;
+}
+
+.profile-status-dot.incomplete {
+  background-color: #f4a316;
+}
+
 .profile-row {
   display: flex;
   align-items: flex-end;
@@ -80,4 +94,10 @@
 .profile-row-side {
   width: 140px;
   flex-shrink: 0;
+}
+
+.default-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }

@@ -1,41 +1,70 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../button";
 import FormDivider from "../../formInputs/FormDivider";
 import FormInput from "../../formInputs/FormInput";
 import StepProgress from "../../formInputs/StepProgress";
 import UploadBox from "../../formInputs/UploadBox";
 import "../../formInputs/index.css";
+import type { SignupFormData } from "../../modal/signupModal";
+import "../index.css";
 
 interface StepThreeProps {
+  data: SignupFormData;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAvatarChange: (file: File | null) => void;
   onSubmit?: () => void;
   onGoToLogin?: () => void;
+  error?: string;
+  loading?: boolean;
 }
 
-export default function StepThree({ onSubmit, onGoToLogin }: StepThreeProps) {
+export default function StepThree({
+  data,
+  onChange,
+  onAvatarChange,
+  onSubmit,
+  onGoToLogin,
+  error,
+  loading,
+}: StepThreeProps) {
   const [uploadedFile, setUploadedFile] = useState<{
     name: string;
     size: number;
     preview?: string;
   } | null>(null);
 
-  const handleFileChange = (file: File | null) => {
-    if (!file) {
+  useEffect(() => {
+    if (!data.avatar) {
       setUploadedFile(null);
       return;
     }
 
+    const preview = URL.createObjectURL(data.avatar);
+
     setUploadedFile({
-      name: file.name,
-      size: file.size,
-      preview: URL.createObjectURL(file),
+      name: data.avatar.name,
+      size: data.avatar.size,
+      preview,
     });
+
+    return () => URL.revokeObjectURL(preview);
+  }, [data.avatar]);
+
+  const handleFileChange = (file: File | null) => {
+    onAvatarChange(file);
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="default-form">
       <StepProgress currentStep={3} />
 
-      <FormInput label="Username*" placeholder="Username" />
+      <FormInput
+        label="Username*"
+        name="username"
+        value={data.username}
+        onChange={onChange}
+        placeholder="Username"
+      />
 
       <UploadBox
         label="Upload Avatar"
@@ -43,8 +72,10 @@ export default function StepThree({ onSubmit, onGoToLogin }: StepThreeProps) {
         onChange={handleFileChange}
       />
 
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+
       <Button width="360px" height="47px" onClick={onSubmit}>
-        Sign Up
+        {loading ? "Signing Up..." : "Sign Up"}
       </Button>
 
       <FormDivider text="or" />
