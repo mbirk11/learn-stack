@@ -1,24 +1,21 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import logo from "../../../assets/images/logo.png";
 import "./index.css";
 import SparkleIcon from "../../../assets/icons/sparkle.svg?react";
 import BookIcon from "../../../assets/icons/book.svg?react";
 import UserProfileIcon from "../../../assets/icons/defaulte_profile.svg?react";
-import Modal from "../../ui/modal/defaultModal";
-import SignupModal from "../../ui/modal/signupModal";
-import Sidebar from "../../ui/sideBar";
 import Button from "../../ui/button";
-import LoginForm from "../../ui/forms/login";
-import UserProfile from "../../ui/forms/profile";
 import { useAuth } from "../../../context/AuthContext";
-
 type ModalView = "login" | "profile" | "signup" | null;
 
-export default function Header() {
+interface HeaderProps {
+  setModalType: (type: ModalView) => void;
+  setSidebarOpen: (value: boolean) => void;
+}
+
+export default function Header({ setModalType, setSidebarOpen }: HeaderProps) {
   const { isAuthenticated } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [modalType, setModalType] = useState<ModalView>(null);
+
   return (
     <header>
       <div className="container">
@@ -58,36 +55,6 @@ export default function Header() {
           )}
         </nav>
       </div>
-
-      <Modal
-        isOpen={modalType === "login" || modalType === "profile"}
-        onClose={() => setModalType(null)}
-        title={modalType === "login" ? "Log In" : "User Profile"}
-      >
-        {modalType === "login" && (
-          <LoginForm
-            onSuccess={() => setModalType(null)}
-            onGoToSignup={() => setModalType("signup")}
-          />
-        )}
-        {modalType === "profile" && <UserProfile />}
-      </Modal>
-
-      <SignupModal
-        isOpen={modalType === "signup"}
-        onClose={() => setModalType(null)}
-        onGoToLogin={() => setModalType("login")}
-      />
-
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        title="Enrolled Courses"
-      >
-        <p>Course 1</p>
-        <p>Course 2</p>
-        <p>Course 3</p>
-      </Sidebar>
     </header>
   );
 }
