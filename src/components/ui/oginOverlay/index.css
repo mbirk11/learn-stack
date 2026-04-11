@@ -1,0 +1,50 @@
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.login-overlay-card {
+  width: 100%;
+  max-width: 418px;
+  min-height: 243px;
+  background: #ffffff;
+  border: 1px solid #c7c7c7;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 32px 24px;
+  box-sizing: border-box;
+}
+
+.login-overlay-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #dddbfa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-overlay-icon {
+  width: 28px;
+  height: 28px;
+  color: #4f46e5;
+}
+
+.login-overlay-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 500;
+  color: #0a0836;
+  text-align: center;
+}
