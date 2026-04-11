@@ -6,7 +6,8 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  children: ReactNode;
+  children?: ReactNode;
+  subtitle?: string;
 }
 
 export default function Sidebar({
@@ -14,22 +15,20 @@ export default function Sidebar({
   onClose,
   title,
   children,
+  subtitle,
 }: SidebarProps) {
   if (!isOpen) return null;
 
   return (
     <>
-      {/* overlay */}
       <div className="sidebar-overlay" onClick={onClose} />
 
-      {/* sidebar */}
       <aside className="sidebar">
         <div className="sidebar-header">
-          {title && <h2 className="sidebar-title">{title}</h2>}
-
-          <button type="button" className="sidebar-close" onClick={onClose}>
-            <IoClose />
-          </button>
+          <div className="sidebar-header-text">
+            {title && <h2 className="sidebar-title">{title}</h2>}
+          </div>
+          {subtitle && <span className="sidebar-subtitle">{subtitle}</span>}
         </div>
 
         <div className="sidebar-body">{children}</div>

@@ -1,0 +1,17 @@
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-header-lecturer {
+  font-size: 14px;
+  color: #666666;
+}
+
+.card-header-rating {
+  font-size: 14px;
+  color: #525252;
+  white-space: nowrap;
+}
