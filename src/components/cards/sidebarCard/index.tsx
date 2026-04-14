@@ -20,7 +20,7 @@ interface EnrolledCourseSidebarCardProps {
   weeklySchedule: string;
   timeSlot: string;
   sessionType: string;
-  location: string;
+  location?: string;
 }
 
 export default function EnrolledCourseSidebarCard({
