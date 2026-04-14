@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import "./index.css";
 
-type BtnType = "primary" | "default-outline" | "default-ghost";
+type BtnType = "primary" | "default-outline" | "default-ghost" | "desabled";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;

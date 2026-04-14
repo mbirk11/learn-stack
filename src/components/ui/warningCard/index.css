@@ -1,0 +1,58 @@
+.warning-card {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #dfe3ea;
+  border-radius: 16px;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.warning-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.warning-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.warning-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.warning-card__title {
+  margin: 0;
+  color: #27272a;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.warning-card__description {
+  margin: 0;
+  color: #8b90a0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  max-width: 70%;
+}
+
+.warning-card__button {
+  flex-shrink: 0;
+  background: #eef0ff;
+  border: 1px solid #b9b8ff;
+  color: #b7b3f4;
+  border-radius: 12px;
+}

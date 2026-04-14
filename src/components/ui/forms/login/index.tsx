@@ -41,8 +41,6 @@ function LoginForm({ onGoToSignup, onSuccess }: LoginFormProps) {
 
       const data = await loginUser(formData);
 
-      console.log("login response:", data);
-
       if (data.data.token) {
         login(data.data.token);
         onSuccess?.();

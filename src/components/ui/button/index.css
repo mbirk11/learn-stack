@@ -36,11 +36,20 @@
 
 /* DEFAULT GHOST */
 .btn.default-ghost {
-  background-color: transparent;
-  color: #4f46e5;
-  border: none;
+  background-color: #eeedfc;
+  color: #281ed2;
+  border: 1px solid #b7b3f4;
+  border-radius: 8px;
 }
 
 .btn.default-ghost:hover {
   background-color: rgba(79, 70, 229, 0.06);
+}
+.btn.desabled {
+  cursor: not-allowed;
+  background-color: #eeedfc;
+  color: #b7b3f4;
+  font-weight: 700;
+  font-size: 20px;
+  border: none;
 }
