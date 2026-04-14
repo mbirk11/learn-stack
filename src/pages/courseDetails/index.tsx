@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useOutletContext, useParams } from "react-router-dom";
-import { FiCalendar, FiCode, FiStar, FiUser } from "react-icons/fi";
+import { FiCalendar, FiClock, FiCode, FiUser } from "react-icons/fi";
 import { submitCourseReview } from "../../api/reviews";
 import { getCourseDetails } from "../../api/courses";
 import {
@@ -20,6 +20,7 @@ import { useAuth } from "../../context/AuthContext";
 import CourseDetailsSidebar from "./CourseSidebar";
 import CourseDetailPopups from "./CourseDetailPopups";
 import "./index.css";
+import StarIcon from "../../assets/icons/star.svg?react";
 
 type ModalView = "login" | "profile" | "signup" | null;
 
@@ -327,12 +328,19 @@ export default function CourseDetail() {
             />
 
             <div className="course-meta">
-              <MetaPill
-                icon={<FiCalendar />}
-                text={`${course.durationWeeks} Weeks`}
-              />
-              <MetaPill icon={<FiStar />} text={averageRating.toFixed(1)} />
-              <MetaPill icon={<FiCode />} text={course.topic.name} />
+              <span>
+                <MetaPill
+                  icon={<FiCalendar />}
+                  text={`${course.durationWeeks} Weeks`}
+                />
+                <MetaPill icon={<FiClock />} text={`${course.hours} Hours`} />
+              </span>
+              <span>
+                <MetaPill icon={<StarIcon />} text={averageRating.toFixed(1)} />
+                <span className=" course-meta-pill__course ">
+                  <MetaPill icon={<FiCode />} text={course.topic.name} />
+                </span>
+              </span>
             </div>
 
             <div className="course-instructor">

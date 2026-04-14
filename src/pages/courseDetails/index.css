@@ -87,6 +87,7 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 14px;
+  justify-content: space-between;
 }
 
 .course-meta-pill {
@@ -95,12 +96,15 @@
   gap: 8px;
   min-height: 38px;
   padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid #ececf3;
-  background: #ffffff;
   color: #52525b;
   font-size: 14px;
   font-weight: 500;
+}
+.course-meta-pill__course {
+  border: 1px solid #ececf3;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px;
 }
 
 .course-meta-pill svg {
@@ -117,7 +121,7 @@
   margin-bottom: 24px;
   padding: 8px 14px;
   border: 1px solid #ececf3;
-  border-radius: 999px;
+  border-radius: 8px;
   background: #ffffff;
   color: #27272a;
   font-size: 14px;
@@ -127,7 +131,7 @@
 .course-instructor-avatar {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: 8px;
   object-fit: cover;
   display: block;
 }
@@ -148,6 +152,8 @@
 .course-description {
   width: 100%;
   max-width: 903px;
+  max-height: 270px;
+  overflow: hidden;
 }
 
 .course-description h3 {

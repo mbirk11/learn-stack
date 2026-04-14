@@ -52,6 +52,7 @@ export interface CourseDetails {
     avatar: string;
   };
   reviews: Review[];
+  hours: number;
 }
 
 export async function getFeaturedCourses(): Promise<FeaturedCourse[]> {
