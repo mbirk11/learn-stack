@@ -99,8 +99,8 @@ const contactItems = [
 ];
 
 const policyLinks = [
-  { id: 1, to: "/terms", label: "Terms and Conditions" },
-  { id: 2, to: "/privacy", label: "Privacy Policy" },
+  { id: 1, to: "/", label: "Terms and Conditions" },
+  { id: 2, to: "/", label: "Privacy Policy" },
 ];
 
 export default function Footer({ setSidebarOpen, setModalType }: FooterProps) {
