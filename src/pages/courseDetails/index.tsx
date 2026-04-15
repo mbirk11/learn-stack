@@ -1,22 +1,16 @@
 import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useOutletContext, useParams } from "react-router-dom";
 import { FiCalendar, FiClock, FiCode, FiUser } from "react-icons/fi";
-import { submitCourseReview } from "../../api/reviews";
 import { getCourseDetails } from "../../api/courses";
-import {
-  completeEnrollment,
-  deleteEnrollment,
-  enrollCourse,
-  getEnrollments,
-  type SessionType,
-} from "../../api/enrollment";
+import { getEnrollments, type SessionType } from "../../api/enrollment";
 import {
   getSessionTypes,
   getTimeSlots,
   getWeeklySchedules,
 } from "../../api/schedule";
 import { useAuth } from "../../context/AuthContext";
+import { useCourseDetailMutations } from "../../hooks/useCourseDetailMutations";
 import CourseDetailsSidebar from "./CourseSidebar";
 import CourseDetailPopups from "./CourseDetailPopups";
 import "./index.css";
@@ -46,7 +40,6 @@ function calculateAverageRating(reviews: Review[]) {
 export default function CourseDetail() {
   const { id } = useParams();
   const courseId = Number(id);
-  const queryClient = useQueryClient();
 
   const { user, isAuthenticated } = useAuth();
   const { setModalType } = useOutletContext<LayoutOutletContext>();
@@ -71,13 +64,21 @@ export default function CourseDetail() {
   const { data: course, isLoading: isCourseLoading } = useQuery({
     queryKey: ["course-details", courseId],
     queryFn: () => getCourseDetails(courseId),
-    enabled: Number.isFinite(courseId),
+    enabled: Number.isFinite(courseId) && courseId > 0,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ["enrollments"],
     queryFn: getEnrollments,
     enabled: isAuthenticated,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const currentEnrollment = useMemo(() => {
@@ -87,13 +88,21 @@ export default function CourseDetail() {
   const { data: weeklySchedules = [] } = useQuery({
     queryKey: ["weekly-schedules", courseId],
     queryFn: () => getWeeklySchedules(courseId),
-    enabled: !!course && !currentEnrollment,
+    enabled: Boolean(course) && !currentEnrollment,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const { data: timeSlots = [] } = useQuery({
     queryKey: ["time-slots", courseId, selectedWeeklyScheduleId],
     queryFn: () => getTimeSlots(courseId, selectedWeeklyScheduleId as number),
-    enabled: !!selectedWeeklyScheduleId && !currentEnrollment,
+    enabled: Boolean(selectedWeeklyScheduleId) && !currentEnrollment,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const { data: sessionTypes = [] } = useQuery({
@@ -110,7 +119,13 @@ export default function CourseDetail() {
         selectedTimeSlotId as number,
       ),
     enabled:
-      !!selectedWeeklyScheduleId && !!selectedTimeSlotId && !currentEnrollment,
+      Boolean(selectedWeeklyScheduleId) &&
+      Boolean(selectedTimeSlotId) &&
+      !currentEnrollment,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const selectedSessionType = useMemo<SessionType | null>(() => {
@@ -142,80 +157,52 @@ export default function CourseDetail() {
     );
   }, [courseId, enrollments, selectedTimeSlotId, selectedWeeklyScheduleId]);
 
-  const averageRating = useMemo(() => {
-    const reviews: Review[] = course?.reviews ?? [];
-
-    if (!reviews.length && !rating) {
-      return 0;
-    }
-
-    const filteredReviews = reviews.filter(
-      (review) => review.userId !== user?.id,
-    );
-
-    if (!rating) {
-      return calculateAverageRating(filteredReviews);
-    }
-
-    const total =
-      filteredReviews.reduce((sum, review) => sum + review.rating, 0) + rating;
-
-    const count = filteredReviews.length + 1;
-
-    return count ? total / count : 0;
-  }, [course?.reviews, rating, user?.id]);
-
-  const enrollMutation = useMutation({
-    mutationFn: enrollCourse,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["enrollments"] });
-      await queryClient.invalidateQueries({
-        queryKey: ["course-details", courseId],
-      });
-      setIsConflictPopupOpen(false);
-      setIsEnrollSuccessPopupOpen(true);
-    },
-  });
-
-  const completeMutation = useMutation({
-    mutationFn: completeEnrollment,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["enrollments"] });
-      setIsCompletedPopupOpen(true);
-    },
-  });
-
-  const retakeMutation = useMutation({
-    mutationFn: deleteEnrollment,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["enrollments"] });
-      await queryClient.invalidateQueries({
-        queryKey: ["course-details", courseId],
-      });
-      setRating(0);
-      setSelectedWeeklyScheduleId(null);
-      setSelectedTimeSlotId(null);
-      setSelectedSessionTypeId(null);
-    },
-  });
-
-  const reviewMutation = useMutation({
-    mutationFn: (nextRating: number) =>
-      submitCourseReview(courseId, { rating: nextRating }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["course-details", courseId],
-      });
-    },
-  });
   const userReview = useMemo(() => {
     const reviews = course?.reviews ?? [];
-    return reviews.find((r) => r.userId === user?.id) ?? null;
+    return reviews.find((r: Review) => r.userId === user?.id) ?? null;
   }, [course?.reviews, user?.id]);
 
   const hasUserRated = Boolean(userReview);
-
   const displayedRating = userReview?.rating ?? rating;
+
+  const averageRating = useMemo(() => {
+    const reviews: Review[] = course?.reviews ?? [];
+
+    if (!reviews.length && !rating) return 0;
+    if (hasUserRated) {
+      return calculateAverageRating(reviews);
+    }
+    if (rating) {
+      const total =
+        reviews.reduce((sum, review) => sum + review.rating, 0) + rating;
+
+      const count = reviews.length + 1;
+
+      return total / count;
+    }
+    return calculateAverageRating(reviews);
+  }, [course?.reviews, rating, hasUserRated]);
+
+  const { enrollMutation, completeMutation, retakeMutation, reviewMutation } =
+    useCourseDetailMutations({
+      courseId,
+      onEnrollSuccess: () => {
+        setIsConflictPopupOpen(false);
+        setIsEnrollSuccessPopupOpen(true);
+      },
+      onCompleteSuccess: () => {
+        setIsCompletedPopupOpen(true);
+      },
+      onRetakeSuccess: () => {
+        setRating(0);
+        setSelectedWeeklyScheduleId(null);
+        setSelectedTimeSlotId(null);
+        setSelectedSessionTypeId(null);
+      },
+      onReviewSuccess: () => {
+        setRating(0);
+      },
+    });
 
   const handleSelectWeeklySchedule = (weeklyScheduleId: number) => {
     setSelectedWeeklyScheduleId(weeklyScheduleId);
@@ -228,7 +215,9 @@ export default function CourseDetail() {
     setSelectedSessionTypeId(null);
   };
 
-  const handleRatingChange = (value: number) => {
+  const handleSubmitRating = (value: number) => {
+    if (!value || hasUserRated) return;
+
     setRating(value);
     reviewMutation.mutate(value);
   };
@@ -307,7 +296,7 @@ export default function CourseDetail() {
   }
 
   return (
-    <>
+    <div className="container">
       <section className="course-detail-page">
         <div className="course-detail-layout">
           <div className="course-detail-main">
@@ -335,9 +324,10 @@ export default function CourseDetail() {
                 />
                 <MetaPill icon={<FiClock />} text={`${course.hours} Hours`} />
               </span>
+
               <span>
                 <MetaPill icon={<StarIcon />} text={averageRating.toFixed(1)} />
-                <span className=" course-meta-pill__course ">
+                <span className="course-meta-pill__course">
                   <MetaPill icon={<FiCode />} text={course.topic.name} />
                 </span>
               </span>
@@ -378,7 +368,6 @@ export default function CourseDetail() {
               totalPrice={totalPrice}
               basePrice={Number(course.basePrice)}
               rating={displayedRating}
-              setRating={handleRatingChange}
               onSelectWeeklySchedule={handleSelectWeeklySchedule}
               onSelectTimeSlot={handleSelectTimeSlot}
               onSelectSessionType={setSelectedSessionTypeId}
@@ -393,20 +382,23 @@ export default function CourseDetail() {
               onGoToLogin={() => setModalType("login")}
               isProfileComplete={Boolean(user?.profileComplete)}
               onCompleteProfile={() => setModalType("profile")}
+              onSubmitRating={handleSubmitRating}
             />
           </aside>
         </div>
       </section>
 
       <CourseDetailPopups
+        hasUserRated={hasUserRated}
         courseTitle={course.title}
         isProfilePopupOpen={isProfilePopupOpen}
         isConflictPopupOpen={isConflictPopupOpen}
         isEnrollSuccessPopupOpen={isEnrollSuccessPopupOpen}
         isCompletedPopupOpen={isCompletedPopupOpen}
         conflictingEnrollment={conflictingEnrollment}
-        rating={rating}
-        setRating={handleRatingChange}
+        rating={displayedRating}
+        onSubmitRating={handleSubmitRating}
+        setRating={setRating}
         onCloseProfilePopup={() => setIsProfilePopupOpen(false)}
         onCompleteProfile={() => {
           setIsProfilePopupOpen(false);
@@ -417,7 +409,7 @@ export default function CourseDetail() {
         onCloseEnrollSuccessPopup={() => setIsEnrollSuccessPopupOpen(false)}
         onCloseCompletedPopup={() => setIsCompletedPopupOpen(false)}
       />
-    </>
+    </div>
   );
 }
 

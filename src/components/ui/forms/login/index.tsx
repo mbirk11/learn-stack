@@ -15,6 +15,7 @@ interface LoginFormProps {
 
 function LoginForm({ onGoToSignup, onSuccess }: LoginFormProps) {
   const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -40,11 +41,15 @@ function LoginForm({ onGoToSignup, onSuccess }: LoginFormProps) {
       setError("");
 
       const data = await loginUser(formData);
+      const token = data?.data?.token;
 
-      if (data.data.token) {
-        login(data.data.token);
-        onSuccess?.();
+      if (!token) {
+        setError("Token not found");
+        return;
       }
+
+      await login(token);
+      onSuccess?.();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "Login failed");

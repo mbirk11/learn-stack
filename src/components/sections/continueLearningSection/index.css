@@ -1,15 +1,16 @@
 .continue-learning-section {
-  margin-top: 48px;
+  width: 100%;
+  padding: 40px 0 80px;
+  margin: 0 auto;
 }
-
 .continue-learning-wrapper {
   position: relative;
 }
 
 .continue-learning-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
 }
 
 .blurred {

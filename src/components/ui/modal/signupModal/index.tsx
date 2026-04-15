@@ -130,7 +130,7 @@ export default function SignupModal({
       setError("");
 
       const response = await registerUser(formData);
-      const token = response.token || response.data?.token;
+      const token = response.data?.token;
 
       if (!token) {
         throw new Error("Token not found");

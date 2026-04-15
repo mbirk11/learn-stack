@@ -19,3 +19,7 @@
 .rating-stars__star.active {
   color: #f5a623;
 }
+.rating-stars__star.disabled {
+  cursor: default;
+  pointer-events: none;
+}

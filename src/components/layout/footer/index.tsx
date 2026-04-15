@@ -12,6 +12,27 @@ import { FiPhone } from "react-icons/fi";
 import "./index.css";
 import logo from "../../../assets/images/logo.png";
 
+type ModalView = "login" | "profile" | "signup" | null;
+
+interface FooterProps {
+  setSidebarOpen: (value: boolean) => void;
+  setModalType: (type: ModalView) => void;
+}
+
+type FooterLink =
+  | {
+      id: number;
+      label: string;
+      type: "link";
+      to: string;
+    }
+  | {
+      id: number;
+      label: string;
+      type: "action";
+      action: "openSidebar" | "openProfile";
+    };
+
 const socialLinks = [
   { id: 1, href: "/", label: "Facebook", icon: FaFacebookF },
   { id: 2, href: "/", label: "Twitter", icon: FaTwitter },
@@ -20,19 +41,40 @@ const socialLinks = [
   { id: 5, href: "/", label: "YouTube", icon: FaYoutube },
 ];
 
-const footerSections = [
+const footerSections: {
+  id: number;
+  title: string;
+  links: FooterLink[];
+}[] = [
   {
     id: 1,
     title: "Explore",
     links: [
-      { id: 1, to: "/courses", label: "Enrolled Courses" },
-      { id: 2, to: "/browse-courses", label: "Browse Courses" },
+      {
+        id: 1,
+        label: "Enrolled Courses",
+        type: "action",
+        action: "openSidebar",
+      },
+      {
+        id: 2,
+        label: "Browse Courses",
+        type: "link",
+        to: "/courses",
+      },
     ],
   },
   {
     id: 2,
     title: "Account",
-    links: [{ id: 1, to: "/profile", label: "My Profile" }],
+    links: [
+      {
+        id: 1,
+        label: "My Profile",
+        type: "action",
+        action: "openProfile",
+      },
+    ],
   },
 ];
 
@@ -61,7 +103,17 @@ const policyLinks = [
   { id: 2, to: "/privacy", label: "Privacy Policy" },
 ];
 
-export default function Footer() {
+export default function Footer({ setSidebarOpen, setModalType }: FooterProps) {
+  const handleActionClick = (action: "openSidebar" | "openProfile") => {
+    if (action === "openSidebar") {
+      setSidebarOpen(true);
+    }
+
+    if (action === "openProfile") {
+      setModalType("profile");
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="footer__container">
@@ -97,11 +149,22 @@ export default function Footer() {
               <div key={section.id} className="footer__column">
                 <h3 className="footer__heading">{section.title}</h3>
 
-                {section.links.map((link) => (
-                  <Link key={link.id} to={link.to} className="footer__link">
-                    {link.label}
-                  </Link>
-                ))}
+                {section.links.map((link) =>
+                  link.type === "link" ? (
+                    <Link key={link.id} to={link.to} className="footer__link">
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <button
+                      key={link.id}
+                      type="button"
+                      className="footer__link footer__linkButton"
+                      onClick={() => handleActionClick(link.action)}
+                    >
+                      {link.label}
+                    </button>
+                  ),
+                )}
               </div>
             ))}
 
@@ -133,7 +196,7 @@ export default function Footer() {
           <div className="footer__bottomLinks">
             <span>All Rights Reserved</span>
 
-            {policyLinks.map((link, index) => (
+            {policyLinks.map((link) => (
               <div key={link.id} className="footer__policyItem">
                 <span className="footer__divider">|</span>
                 <Link to={link.to} className="footer__policyLink">

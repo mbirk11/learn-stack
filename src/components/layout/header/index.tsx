@@ -6,6 +6,7 @@ import BookIcon from "../../../assets/icons/book.svg?react";
 import UserProfileIcon from "../../../assets/icons/defaulte_profile.svg?react";
 import Button from "../../ui/button";
 import { useAuth } from "../../../context/AuthContext";
+
 type ModalView = "login" | "profile" | "signup" | null;
 
 interface HeaderProps {
@@ -14,7 +15,7 @@ interface HeaderProps {
 }
 
 export default function Header({ setModalType, setSidebarOpen }: HeaderProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <header>
@@ -42,15 +43,31 @@ export default function Header({ setModalType, setSidebarOpen }: HeaderProps) {
             </>
           ) : (
             <>
-              <span className="nav-item" onClick={() => setSidebarOpen(true)}>
+              <button
+                type="button"
+                className="nav-item nav-item-button"
+                onClick={() => setSidebarOpen(true)}
+              >
                 <BookIcon className="icon" />
                 <span className="link">Enrolled Courses</span>
-              </span>
+              </button>
 
-              <UserProfileIcon
-                className="profile-icon"
+              <button
+                type="button"
+                className="profile-trigger"
                 onClick={() => setModalType("profile")}
-              />
+                aria-label="Open profile"
+              >
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.fullName || "User avatar"}
+                    className="profile-avatar"
+                  />
+                ) : (
+                  <UserProfileIcon className="profile-icon" />
+                )}
+              </button>
             </>
           )}
         </nav>

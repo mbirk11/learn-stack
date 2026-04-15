@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getCurrentUser } from "../api/auth";
+import { getCurrentUser, logoutUser } from "../api/auth";
 
 interface User {
   id?: number;
   email?: string;
   username?: string;
-  avatar?: string;
+  avatar?: string | null;
   fullName?: string;
   mobileNumber?: string;
   age?: number;
@@ -18,7 +18,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (token: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -72,10 +72,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshUser();
   };
 
-  const logout = () => {
-    removeStoredToken();
-    setUser(null);
-    setToken(null);
+  const logout = async () => {
+    try {
+      await logoutUser();
+    } catch {
+      // ignore logout request errors
+    } finally {
+      removeStoredToken();
+      setUser(null);
+      setToken(null);
+    }
   };
 
   useEffect(() => {

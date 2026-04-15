@@ -21,6 +21,8 @@ interface EnrolledCourseSidebarCardProps {
   timeSlot: string;
   sessionType: string;
   location?: string;
+
+  setSidebarOpen?: (value: boolean) => void;
 }
 
 export default function EnrolledCourseSidebarCard({
@@ -34,9 +36,11 @@ export default function EnrolledCourseSidebarCard({
   timeSlot,
   sessionType,
   location,
+
+  setSidebarOpen,
 }: EnrolledCourseSidebarCardProps) {
   const navigate = useNavigate();
-
+  console.log(rating, "raitnig");
   return (
     <div className="enrolled-sidebar-card">
       <div className="enrolled-sidebar-card-top">
@@ -98,7 +102,10 @@ export default function EnrolledCourseSidebarCard({
           width="90px"
           height="40px"
           btnType="default-outline"
-          onClick={() => navigate(`/courses/${courseId}`)}
+          onClick={() => {
+            navigate(`/courses/${courseId}`);
+            setSidebarOpen?.(false);
+          }}
         >
           View
         </Button>

@@ -1,6 +1,8 @@
 .course-detail-page {
   width: 100%;
   padding: 40px 0 80px;
+  max-width: 1560px;
+  margin: 0 auto;
 }
 
 .course-detail-layout {

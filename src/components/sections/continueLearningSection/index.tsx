@@ -3,9 +3,14 @@ import { useAuth } from "../../../context/AuthContext";
 import SectionHeader from "../../ui/sectionHeader";
 import CourseProgressCard from "../../cards/courseProgressCard";
 import LoginOverlay from "../../ui/oginOverlay";
-import { getEnrollments, type Enrollment } from "../../../api/enrollment";
+import {
+  getContinueLearningCourses,
+  type ContinueLearningCourse,
+} from "../../../api/courses";
 import { fakeContinueLearningCourses } from "../../../utils/fakeCourses";
 import "./index.css";
+import { useNavigate } from "react-router-dom";
+
 interface Props {
   onSeeAll?: () => void;
   onLogin?: () => void;
@@ -13,38 +18,39 @@ interface Props {
 
 export default function ContinueLearningSection({ onSeeAll, onLogin }: Props) {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [courses, setCourses] = useState<ContinueLearningCourse[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const fetchEnrollments = async () => {
+    const fetchContinueLearningCourses = async () => {
       try {
         setLoading(true);
-        const response = await getEnrollments();
-        setEnrollments(response);
+        const response = await getContinueLearningCourses();
+        setCourses(response);
       } catch (error) {
-        console.error("Failed to fetch enrollments", error);
-        setEnrollments([]);
+        console.error("Failed to fetch continue learning courses", error);
+        setCourses([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEnrollments();
+    fetchContinueLearningCourses();
   }, [isAuthenticated]);
 
-  if (isAuthenticated && !loading && enrollments.length === 0) {
+  if (isAuthenticated && !loading && courses.length === 0) {
     return null;
   }
 
   const data = isAuthenticated
-    ? enrollments.map((item) => ({
+    ? courses.map((item) => ({
         id: item.id,
         image: item.course.image,
-        lecturer: item.course.instructor.name,
+        lecturer: item.course.instructor.name ?? "Unknown Instructor",
         rating: item.course.avgRating,
         title: item.course.title,
         progress: item.progress,
@@ -59,32 +65,37 @@ export default function ContinueLearningSection({ onSeeAll, onLogin }: Props) {
       }));
 
   return (
-    <section className="continue-learning-section">
-      <SectionHeader
-        title="Continue Learning"
-        subtitle="Pick up where you left"
-        actionText="See All"
-        onActionClick={onSeeAll}
-      />
+    <div className="container">
+      <section className="continue-learning-section">
+        <SectionHeader
+          title="Continue Learning"
+          subtitle="Pick up where you left"
+          actionText="See All"
+          onActionClick={onSeeAll}
+        />
 
-      <div className="continue-learning-wrapper">
-        <div className={!isAuthenticated ? "blurred" : ""}>
-          <div className="continue-learning-grid">
-            {data.map((course) => (
-              <CourseProgressCard
-                key={course.id}
-                image={course.image}
-                lecturer={course.lecturer}
-                rating={course.rating}
-                title={course.title}
-                progress={course.progress}
-              />
-            ))}
+        <div className="continue-learning-wrapper">
+          <div className={!isAuthenticated ? "blurred" : ""}>
+            <div className="continue-learning-grid">
+              {data.map((course) => (
+                <CourseProgressCard
+                  key={course.id}
+                  image={course.image}
+                  lecturer={course.lecturer}
+                  rating={course.rating}
+                  title={course.title}
+                  progress={course.progress}
+                  onView={() => {
+                    navigate(`/courses/${course.id}`);
+                  }}
+                />
+              ))}
+            </div>
           </div>
-        </div>
 
-        {!isAuthenticated && <LoginOverlay onLogin={onLogin} />}
-      </div>
-    </section>
+          {!isAuthenticated && <LoginOverlay onLogin={onLogin} />}
+        </div>
+      </section>
+    </div>
   );
 }

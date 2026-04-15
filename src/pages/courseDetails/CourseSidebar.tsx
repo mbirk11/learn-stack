@@ -40,7 +40,6 @@ type CourseDetailsSidebarProps = {
   totalPrice: number;
   basePrice: number;
   rating: number;
-  setRating: (value: number) => void;
   onSelectWeeklySchedule: (id: number) => void;
   onSelectTimeSlot: (id: number) => void;
   onSelectSessionType: (id: number | null) => void;
@@ -55,6 +54,7 @@ type CourseDetailsSidebarProps = {
   onGoToLogin: () => void;
   isProfileComplete: boolean;
   onCompleteProfile: () => void;
+  onSubmitRating: (value: number) => void;
 };
 
 type StepKey = 1 | 2 | 3;
@@ -71,10 +71,10 @@ export default function CourseDetailsSidebar({
   totalPrice,
   basePrice,
   rating,
-  setRating,
   onSelectWeeklySchedule,
   onSelectTimeSlot,
   onSelectSessionType,
+  onSubmitRating,
   onEnroll,
   onComplete,
   onRetake,
@@ -177,7 +177,11 @@ export default function CourseDetailsSidebar({
                   <>
                     <p className="rating-card__title">Your rating</p>
 
-                    <RatingStars value={rating} onChange={() => {}} />
+                    <RatingStars
+                      value={rating}
+                      isRated={hasUserRated}
+                      onChange={onSubmitRating}
+                    />
 
                     <p className="rating-card__already">
                       You've already rated this course
@@ -187,12 +191,27 @@ export default function CourseDetailsSidebar({
                   <>
                     <p className="rating-card__title">Rate your experience</p>
 
-                    <RatingStars value={rating} onChange={setRating} />
+                    <RatingStars
+                      value={rating}
+                      onChange={onSubmitRating}
+                      isRated={hasUserRated}
+                    />
 
-                    {/* optional helper text */}
                     <p className="rating-card__hint">
-                      Click a star to rate this course
+                      Select a star rating and submit your review
                     </p>
+
+                    <Button
+                      onClick={() => {
+                        onSubmitRating;
+                      }}
+                      btnType="primary"
+                      width="100%"
+                      height="44px"
+                      disabled={!hasUserRated}
+                    >
+                      Submit Rating
+                    </Button>
                   </>
                 )}
               </div>

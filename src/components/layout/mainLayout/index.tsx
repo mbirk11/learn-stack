@@ -34,7 +34,7 @@ export default function MainLayout() {
         <Outlet context={{ setModalType, setSidebarOpen }} />
       </main>
 
-      <Footer />
+      <Footer setSidebarOpen={setSidebarOpen} setModalType={setModalType} />
 
       <Modal
         title="Welcome Back"
@@ -54,6 +54,7 @@ export default function MainLayout() {
       <SignupModal
         isOpen={modalType === "signup"}
         onClose={() => setModalType(null)}
+        onGoToLogin={() => setModalType("login")}
       />
 
       <Sidebar
@@ -68,6 +69,7 @@ export default function MainLayout() {
           <div className="flex flex-col gap-4">
             {enrollments.map((item) => (
               <EnrolledCourseSidebarCard
+                setSidebarOpen={setSidebarOpen}
                 key={item.id}
                 enrollmentId={item.id}
                 courseId={item.course.id}

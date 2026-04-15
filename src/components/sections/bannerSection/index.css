@@ -1,5 +1,8 @@
 .hero-banner {
   width: 100%;
+  padding: 40px 0 80px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .hero-banner__background {

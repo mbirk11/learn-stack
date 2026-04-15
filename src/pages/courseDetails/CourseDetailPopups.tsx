@@ -36,6 +36,8 @@ interface CourseDetailPopupsProps {
   onContinueAnyway: () => void;
   onCloseEnrollSuccessPopup: () => void;
   onCloseCompletedPopup: () => void;
+  hasUserRated: boolean;
+  onSubmitRating: (value: number) => void;
 }
 
 export default function CourseDetailPopups({
@@ -47,12 +49,14 @@ export default function CourseDetailPopups({
   conflictingEnrollment,
   rating,
   setRating,
+  onSubmitRating,
   onCloseProfilePopup,
   onCompleteProfile,
   onCloseConflictPopup,
   onContinueAnyway,
   onCloseEnrollSuccessPopup,
   onCloseCompletedPopup,
+  hasUserRated,
 }: CourseDetailPopupsProps) {
   return (
     <>
@@ -170,7 +174,7 @@ export default function CourseDetailPopups({
         ]}
       >
         <p className="popup-rating-label">Rate your experience</p>
-        <RatingStars value={rating} onChange={setRating} />
+        <RatingStars value={rating} onChange={onSubmitRating} />
       </Popup>
     </>
   );

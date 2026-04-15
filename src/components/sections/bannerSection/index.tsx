@@ -97,66 +97,68 @@ export default function HeaderBanner() {
   };
 
   return (
-    <section className="hero-banner">
-      <div
-        className="hero-banner__background"
-        style={{ backgroundImage: `url(${currentSlide.image})` }}
-      >
-        <div className="hero-banner__overlay" />
+    <div className="container">
+      <section className="hero-banner">
+        <div
+          className="hero-banner__background"
+          style={{ backgroundImage: `url(${currentSlide.image})` }}
+        >
+          <div className="hero-banner__overlay" />
 
-        <div className="hero-banner__content">
-          <div className="hero-banner__text">
-            <h1 className="hero-banner__title">{currentSlide.title}</h1>
+          <div className="hero-banner__content">
+            <div className="hero-banner__text">
+              <h1 className="hero-banner__title">{currentSlide.title}</h1>
 
-            <p className="hero-banner__description">
-              {currentSlide.description}
-            </p>
+              <p className="hero-banner__description">
+                {currentSlide.description}
+              </p>
 
-            <Button width="206px" height="64px" onClick={handleButtonClick}>
-              {currentSlide.buttonText}
-            </Button>
-          </div>
-
-          <div className="hero-banner__controls">
-            <div className="hero-banner__dots">
-              {slides.map((slide, index) => (
-                <button
-                  key={slide.id}
-                  type="button"
-                  className={`hero-banner__dot ${
-                    index === currentIndex ? "active" : ""
-                  }`}
-                  onClick={() => goToSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
+              <Button width="206px" height="64px" onClick={handleButtonClick}>
+                {currentSlide.buttonText}
+              </Button>
             </div>
 
-            <div className="hero-banner__arrows">
-              <button
-                type="button"
-                className={`hero-banner__arrow ${
-                  currentIndex !== 0 ? "hero-banner__arrow--active" : ""
-                }`}
-                onClick={handlePrev}
-              >
-                <IoChevronBackOutline />
-              </button>
-              <button
-                type="button"
-                className={`hero-banner__arrow ${
-                  currentIndex !== slides.length - 1
-                    ? "hero-banner__arrow--active"
-                    : ""
-                }`}
-                onClick={handleNext}
-              >
-                <IoChevronForwardOutline />
-              </button>
+            <div className="hero-banner__controls">
+              <div className="hero-banner__dots">
+                {slides.map((slide, index) => (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    className={`hero-banner__dot ${
+                      index === currentIndex ? "active" : ""
+                    }`}
+                    onClick={() => goToSlide(index)}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              <div className="hero-banner__arrows">
+                <button
+                  type="button"
+                  className={`hero-banner__arrow ${
+                    currentIndex !== 0 ? "hero-banner__arrow--active" : ""
+                  }`}
+                  onClick={handlePrev}
+                >
+                  <IoChevronBackOutline />
+                </button>
+                <button
+                  type="button"
+                  className={`hero-banner__arrow ${
+                    currentIndex !== slides.length - 1
+                      ? "hero-banner__arrow--active"
+                      : ""
+                  }`}
+                  onClick={handleNext}
+                >
+                  <IoChevronForwardOutline />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

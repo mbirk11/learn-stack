@@ -5,12 +5,14 @@ interface RatingStarsProps {
   value?: number;
   onChange?: (value: number) => void;
   max?: number;
+  isRated?: boolean;
 }
 
 export default function RatingStars({
   value = 0,
   onChange,
   max = 5,
+  isRated,
 }: RatingStarsProps) {
   const [hoveredValue, setHoveredValue] = useState(0);
 
@@ -26,9 +28,12 @@ export default function RatingStars({
           <button
             key={starValue}
             type="button"
-            className={`rating-stars__star ${isActive ? "active" : ""}`}
-            onMouseEnter={() => setHoveredValue(starValue)}
-            onMouseLeave={() => setHoveredValue(0)}
+            className={`rating-stars__star ${isActive ? "active" : ""} ${
+              isRated ? "disabled" : ""
+            }`}
+            disabled={isRated}
+            onMouseEnter={() => !isRated && setHoveredValue(starValue)}
+            onMouseLeave={() => !isRated && setHoveredValue(0)}
             onClick={() => onChange?.(starValue)}
           >
             ★

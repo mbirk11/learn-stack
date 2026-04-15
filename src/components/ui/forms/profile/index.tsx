@@ -1,21 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   IoCheckmark,
   IoChevronDownOutline,
+  IoCloudUploadOutline,
   IoPencilOutline,
 } from "react-icons/io5";
 import FormInput from "../../formInputs/FormInput";
 import FormSelect from "../../formInputs/FormSelect";
-import UploadBox from "../../formInputs/UploadBox";
 import Button from "../../button";
 import { updateProfile } from "../../../../api/profile";
 import { useAuth } from "../../../../context/AuthContext";
 import "./index.css";
 import DefaultProfile from "../../../../assets/icons/defaulte_profile.svg";
 
+interface FilePreview {
+  name: string;
+  size: number;
+  preview?: string;
+}
+
 export default function UserProfile() {
   const { user, refreshUser } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [formData, setFormData] = useState({
     full_name: "",
@@ -25,14 +32,17 @@ export default function UserProfile() {
     avatar: null as File | null,
   });
 
-  const [filePreview, setFilePreview] = useState<{
-    name: string;
-    size: number;
-    preview?: string;
-  } | null>(null);
-
+  const [filePreview, setFilePreview] = useState<FilePreview | null>(null);
+  const [isDragActive, setIsDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const cleanupPreviewUrl = (preview?: string) => {
+    if (preview && preview.startsWith("blob:")) {
+      URL.revokeObjectURL(preview);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -45,16 +55,24 @@ export default function UserProfile() {
       avatar: null,
     });
 
-    setFilePreview(
-      user.avatar
-        ? {
-            name: "current-avatar",
-            size: 0,
-            preview: user.avatar,
-          }
-        : null,
-    );
+    setFilePreview((prev) => {
+      cleanupPreviewUrl(prev?.preview);
+
+      if (!user.avatar) return null;
+
+      return {
+        name: "current-avatar",
+        size: 0,
+        preview: user.avatar,
+      };
+    });
   }, [user]);
+
+  useEffect(() => {
+    return () => {
+      cleanupPreviewUrl(filePreview?.preview);
+    };
+  }, [filePreview]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,52 +94,101 @@ export default function UserProfile() {
     setError("");
   };
 
-  const handleFileChange = (file: File | null) => {
+  const validateFile = (file: File) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const maxSize = 2 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      return "Avatar must be jpg, png or webp.";
+    }
+
+    if (file.size > maxSize) {
+      return "Avatar must be smaller than 2MB.";
+    }
+
+    return null;
+  };
+
+  const applyFile = (file: File | null) => {
     if (!file) {
       setFormData((prev) => ({
         ...prev,
         avatar: null,
       }));
 
-      setFilePreview(
-        user?.avatar
-          ? {
-              name: "current-avatar",
-              size: 0,
-              preview: user.avatar,
-            }
-          : null,
-      );
+      setFilePreview((prev) => {
+        cleanupPreviewUrl(prev?.preview);
+
+        if (!user?.avatar) return null;
+
+        return {
+          name: "current-avatar",
+          size: 0,
+          preview: user.avatar,
+        };
+      });
+
+      setError("");
       return;
     }
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    const maxSize = 2 * 1024 * 1024;
+    const validationError = validateFile(file);
 
-    if (!allowedTypes.includes(file.type)) {
-      setError("Avatar must be jpg, png or webp.");
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
-    if (file.size > maxSize) {
-      setError("Avatar must be smaller than 2MB.");
-      return;
-    }
-
-    setError("");
+    const preview = URL.createObjectURL(file);
 
     setFormData((prev) => ({
       ...prev,
       avatar: file,
     }));
 
-    const preview = URL.createObjectURL(file);
+    setFilePreview((prev) => {
+      cleanupPreviewUrl(prev?.preview);
 
-    setFilePreview({
-      name: file.name,
-      size: file.size,
-      preview,
+      return {
+        name: file.name,
+        size: file.size,
+        preview,
+      };
     });
+
+    setError("");
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    applyFile(file);
+
+    e.target.value = "";
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+
+    const file = e.dataTransfer.files?.[0] || null;
+    applyFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  };
+
+  const openFilePicker = () => {
+    fileInputRef.current?.click();
   };
 
   const handleSubmit = async () => {
@@ -158,6 +225,10 @@ export default function UserProfile() {
     }
   };
 
+  const formattedFileSize = filePreview?.size
+    ? `${(filePreview.size / 1024 / 1024).toFixed(2)} MB`
+    : "";
+
   return (
     <div className="profile-form flex flex-col gap-6">
       <div className="profile-header">
@@ -165,7 +236,12 @@ export default function UserProfile() {
           <img
             src={filePreview?.preview || DefaultProfile}
             alt="Profile"
-            className="profile-avatar"
+            className="profile-avatar clickable"
+            onClick={() => {
+              if (filePreview?.preview) {
+                setIsPreviewOpen(true);
+              }
+            }}
           />
           <span
             className={`profile-status-dot ${
@@ -237,11 +313,93 @@ export default function UserProfile() {
         </div>
       </div>
 
-      <UploadBox
-        label="Upload Avatar"
-        file={filePreview}
-        onChange={handleFileChange}
-      />
+      <div className="profile-upload-section">
+        <label className="profile-upload-label">Upload Avatar</label>
+
+        <div
+          className={`profile-upload-box ${isDragActive ? "drag-active" : ""}`}
+          onClick={openFilePicker}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragOver}
+          onDragLeave={handleDragLeave}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              openFilePicker();
+            }
+          }}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileChange}
+            hidden
+          />
+
+          {formData.avatar && filePreview?.preview ? (
+            <div className="profile-upload-selected">
+              <img
+                src={filePreview.preview}
+                alt="Avatar preview"
+                className="profile-upload-selected-image"
+              />
+              <p className="profile-upload-selected-text">{filePreview.name}</p>
+
+              <button
+                type="button"
+                className="profile-upload-selected-remove"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  applyFile(null);
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="profile-upload-icon">
+                <IoCloudUploadOutline size={26} />
+              </div>
+
+              <div className="profile-upload-texts">
+                <p className="profile-upload-title">
+                  Drag and drop or <span>Upload file</span>
+                </p>
+                <p className="profile-upload-subtitle">JPG, PNG or WebP</p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      {isPreviewOpen && (
+        <div
+          className="avatar-preview-overlay"
+          onClick={() => setIsPreviewOpen(false)}
+        >
+          <div
+            className="avatar-preview-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="avatar-preview-close"
+              onClick={() => setIsPreviewOpen(false)}
+            >
+              ✕
+            </button>
+
+            <img
+              src={filePreview?.preview || DefaultProfile}
+              alt="Preview"
+              className="avatar-preview-image"
+            />
+          </div>
+        </div>
+      )}
 
       {error ? <p className="text-red-500 text-sm">{error}</p> : null}
 
