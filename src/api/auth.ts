@@ -1,5 +1,16 @@
 import client from "./client";
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  avatar: string | null;
+  fullName: string;
+  mobileNumber: string;
+  age: number;
+  profileComplete: boolean;
+}
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -13,14 +24,27 @@ export interface RegisterPayload {
   avatar: File | null;
 }
 
+export interface AuthResponse {
+  data: {
+    user: User;
+    token: string;
+  };
+}
+
+export interface CurrentUserResponse {
+  data: User;
+}
+
 // LOGIN
-export const loginUser = async (data: LoginPayload) => {
-  const response = await client.post("/login", data);
+export const loginUser = async (data: LoginPayload): Promise<AuthResponse> => {
+  const response = await client.post<AuthResponse>("/login", data);
   return response.data;
 };
 
 // REGISTER
-export const registerUser = async (data: RegisterPayload) => {
+export const registerUser = async (
+  data: RegisterPayload,
+): Promise<AuthResponse> => {
   const formData = new FormData();
 
   formData.append("username", data.username);
@@ -32,7 +56,7 @@ export const registerUser = async (data: RegisterPayload) => {
     formData.append("avatar", data.avatar);
   }
 
-  const response = await client.post("/register", formData, {
+  const response = await client.post<AuthResponse>("/register", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -41,14 +65,13 @@ export const registerUser = async (data: RegisterPayload) => {
   return response.data;
 };
 
-// ✅ CURRENT USER
-export const getCurrentUser = async () => {
-  const response = await client.get("/me");
+// CURRENT USER
+export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
+  const response = await client.get<CurrentUserResponse>("/me");
   return response.data;
 };
 
-// ✅ LOGOUT
-export const logoutUser = async () => {
-  const response = await client.post("/logout");
-  return response.data;
+// LOGOUT
+export const logoutUser = async (): Promise<void> => {
+  await client.post("/logout");
 };
