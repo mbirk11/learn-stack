@@ -48,7 +48,6 @@ export default function CourseDetailPopups({
   isCompletedPopupOpen,
   conflictingEnrollment,
   rating,
-  setRating,
   onSubmitRating,
   onCloseProfilePopup,
   onCompleteProfile,
@@ -56,7 +55,6 @@ export default function CourseDetailPopups({
   onContinueAnyway,
   onCloseEnrollSuccessPopup,
   onCloseCompletedPopup,
-  hasUserRated,
 }: CourseDetailPopupsProps) {
   return (
     <>

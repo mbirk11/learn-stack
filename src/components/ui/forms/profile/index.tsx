@@ -224,11 +224,6 @@ export default function UserProfile() {
       setLoading(false);
     }
   };
-
-  const formattedFileSize = filePreview?.size
-    ? `${(filePreview.size / 1024 / 1024).toFixed(2)} MB`
-    : "";
-
   return (
     <div className="profile-form flex flex-col gap-6">
       <div className="profile-header">

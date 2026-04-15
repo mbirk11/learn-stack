@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import "./index.css";
-import { IoClose } from "react-icons/io5";
 
 interface SidebarProps {
   isOpen: boolean;

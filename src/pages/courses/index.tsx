@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import BrowseCourseCard from "../../components/browse/courseCardBrowse";
 import CoursesPagination from "../../components/browse/coursesPagination";
 import FilterSidebar from "../../components/browse/filterSideBar";
